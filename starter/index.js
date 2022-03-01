@@ -1,7 +1,10 @@
 const fs = require('fs');
+const http = require('http');
 
 const name = 'Magdalena';
 console.log('name: ', name);
+
+// ====== FILES ======
 
 // -- SYNCHRONOUS --
 // READ FROM SPECIFIC FILE
@@ -32,3 +35,16 @@ fs.readFile('./txt/start.txt', 'utf-8', (err, data1) => {
     })
 });
 console.log('Should display first! Check this out!');
+
+// ====== SERVER ======
+
+// CREATE SERVER
+const server = http.createServer((req, res) => {
+    // show this response every time request is send to server (browser endpoint)
+    res.end('Hello from the server!');
+});
+
+server.listen(8000, '127.0.0.1', () => {
+    // listen to server
+    console.log('------- server started -----');
+});
