@@ -41,7 +41,20 @@ console.log('Should display first! Check this out!');
 // CREATE SERVER
 const server = http.createServer((req, res) => {
     // show this response every time request is send to server (browser endpoint)
-    res.end('Hello from the server!');
+
+    // Routing server side
+    const pathName = req.url;
+    if (pathName === '/' || pathName === '/overview') {
+        res.end('OVERVIEW');
+    } else if (pathName === '/server') {
+        res.end('Hello from the server!');
+    } else {
+        res.writeHead(404, {
+            'Content-type': 'text/html',
+            'my-own-custom-header': 'learn-node-js'
+        });
+        res.end('<h1>404</h1><h6>PAGE NOT FOUND!</h6>');
+    }
 });
 
 server.listen(8000, '127.0.0.1', () => {
