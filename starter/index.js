@@ -36,6 +36,10 @@ fs.readFile('./txt/start.txt', 'utf-8', (err, data1) => {
 });
 console.log('Should display first! Check this out!');
 
+// ---- Read file sync ----
+const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8');
+const productData = JSON.parse(data);
+
 // ====== SERVER ======
 
 // CREATE SERVER
@@ -46,6 +50,11 @@ const server = http.createServer((req, res) => {
     const pathName = req.url;
     if (pathName === '/' || pathName === '/overview') {
         res.end('OVERVIEW');
+    } else if (pathName === '/api') {
+        res.writeHead(200, {
+            'Content-type': 'application/json'
+        });
+        res.end(data);
     } else if (pathName === '/server') {
         res.end('Hello from the server!');
     } else {
