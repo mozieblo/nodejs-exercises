@@ -1,5 +1,6 @@
-const fs = require('fs');
-const http = require('http');
+import fs  from 'fs';
+import http from 'http';
+import { URL } from 'url';
 
 const name = 'Magdalena';
 console.log('name: ', name);
@@ -37,11 +38,11 @@ fs.readFile('./txt/start.txt', 'utf-8', (err, data1) => {
 console.log('Should display first! Check this out!');
 
 // ---- Read file sync ----
-const overviewTemp = fs.readFileSync(`${__dirname}/templates/template-overview.html`, 'utf-8');
-const productTemp = fs.readFileSync(`${__dirname}/templates/template-product.html`, 'utf-8');
-const cardTemp = fs.readFileSync(`${__dirname}/templates/template-card.html`, 'utf-8');
+const overviewTemp = fs.readFileSync('./templates/template-overview.html', 'utf-8');
+const productTemp = fs.readFileSync('./templates/template-product.html', 'utf-8');
+const cardTemp = fs.readFileSync('./templates/template-card.html', 'utf-8');
 
-const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8');
+const data = fs.readFileSync('./dev-data/data.json', 'utf-8');
 const productData = JSON.parse(data);
 
 const replaceTemp = (temp, product) => {
@@ -49,7 +50,7 @@ const replaceTemp = (temp, product) => {
   output = output.replace(/{%ID%}/g, product.id);
   output = output.replace(/{%IMAGE%}/g, product.image);
   output = output.replace(/{%FROM%}/g, product.from);
-  output = output.replace(/{%NTRIENTS%}/g, product.nutrients);
+  output = output.replace(/{%NUTRIENTS%}/g, product.nutrients);
   output = output.replace(/{%QUANTITY%}/g, product.quantity);
   output = output.replace(/{%PRICE%}/g, product.price);
   output = output.replace(/{%DESCRIPTION%}/g, product.description);
@@ -64,24 +65,27 @@ const replaceTemp = (temp, product) => {
 const server = http.createServer((req, res) => {
     // show this response every time request is send to server (browser endpoint)
 
-    // Routing server side
-    const pathName = req.url;
+    // Routing server side -> spread url to parts
+    const { searchParams, pathname } = new URL(req.url, 'http://127.0.0.1');
+
     // overview page
-    if (pathName === '/' || pathName === '/overview') {
-        const cardHtml = productData.map(el => replaceTemp(cardTemp, el));
+    if (pathname === '/' || pathname === '/overview') {
+        const cardHtml = productData.map(el => replaceTemp(cardTemp, el)).join('');
         const output = overviewTemp.replace(/{%PRODUCT_CARDS%}/g, cardHtml);
         res.end(output);
     } 
     // product api
-    else if (pathName === '/api') {
+    else if (pathname === '/api') {
         res.writeHead(200, {
             'Content-type': 'application/json'
         });
         res.end(data);   
     } 
     // product page 
-    else if (pathName === '/product') {
-        res.end('Hello from the server!');
+    else if (pathname === '/product') {
+        const id = searchParams.get('id');
+        const productHtml = replaceTemp(productTemp, productData[id]);
+        res.end(productHtml);
     } 
     // not found page 
     else {
