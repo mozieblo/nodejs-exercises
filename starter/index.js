@@ -1,6 +1,7 @@
 import fs  from 'fs';
 import http from 'http';
 import { URL } from 'url';
+import slugify from 'slugify';
 import replaceTemp from './modules/replaceTemp.cjs';
 
 const name = 'Magdalena';
@@ -45,6 +46,9 @@ const cardTemp = fs.readFileSync('./templates/template-card.html', 'utf-8');
 
 const data = fs.readFileSync('./dev-data/data.json', 'utf-8');
 const productData = JSON.parse(data);
+
+const slugs = productData.map(el => slugify(el.productName, { lower: true}));
+console.log('slugs ========>', slugs);
 
 // ====== SERVER ======
 
