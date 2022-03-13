@@ -1,8 +1,12 @@
 import fs from 'fs';
-import http from 'http';
 import { URL } from 'url';
 import slugify from 'slugify';
 import replaceTemp from './modules/replaceTemp.cjs';
+
+const key = fs.readFileSync('./cert/CA/localhost/localhost.decrypted.key');
+const cert = fs.readFileSync('./cert/CA/localhost/localhost.crt');
+
+import https from 'https';
 
 const name = 'Magdalena';
 console.log('name: ', name);
@@ -57,11 +61,11 @@ console.log('slugs ========>', slugs);
 // ====== SERVER ======
 
 // CREATE SERVER
-const server = http.createServer((req, res) => {
+const server = https.createServer({ key, cert }, (req, res) => {
   // show this response every time request is send to server (browser endpoint)
 
   // Routing server side -> spread url to parts
-  const { searchParams, pathname } = new URL(req.url, 'http://127.0.0.1');
+  const { searchParams, pathname } = new URL(req.url, 'https://127.0.0.1');
 
   // overview page
   if (pathname === '/' || pathname === '/overview') {
